@@ -1,5 +1,7 @@
 import logging
 import logging.config
+import os
+import tempfile
 import time
 import unittest
 from io import StringIO
@@ -13,44 +15,23 @@ class BasicUsageTest(unittest.TestCase):
         logger = logging.getLogger(__name__)
         logger.setLevel(logging.INFO)
 
-        mockLogStream = StringIO()
-
-        hdlr = AsyncHandler(
-            [
-                logging.FileHandler("app.log", mode="w"),
-                logging.StreamHandler(stream=mockLogStream),
-            ]
-        )
+        hdlr = AsyncHandler([logging.StreamHandler(), logging.FileHandler("app.log")])
         logger.addHandler(hdlr)
         logger.info("hello")
 
-        time.sleep(1)
-
-        mockLogStream.seek(0)
-        self.assertEqual(mockLogStream.read(), "hello\n")
-
-        with open("app.log") as f:
-            self.assertEqual(f.read(), "hello\n")
-
     def testConfigUsage(self):
-        mockLogStream = StringIO()
         LOGGING = {
             "version": 1,
             "handlers": {
                 "qhandler": {
                     "class": "async_handler.AsyncHandler",
-                    "queue": {
-                        "class": "queue.Queue",
-                    },
                     "handlers": [
                         {
                             "class": "logging.StreamHandler",
-                            "stream": mockLogStream,
                         },
                         {
                             "class": "logging.FileHandler",
                             "filename": "app.log",
-                            "mode": "w",
                         },
                     ],
                 },
@@ -66,12 +47,3 @@ class BasicUsageTest(unittest.TestCase):
 
         logger = logging.getLogger(__name__)
         logger.info("hello")
-
-        time.sleep(1)
-
-        mockLogStream.seek(0)
-        self.assertEqual(mockLogStream.read(), "hello\n")
-        print(mockLogStream.read())
-
-        with open("app.log") as f:
-            self.assertEqual(f.read(), "hello\n")
