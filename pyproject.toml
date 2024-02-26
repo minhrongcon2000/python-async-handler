@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "python_async_handler"
+version = "0.0.1"
+authors = [
+  { name="minhrongcon2000", email="minhrongcon2000@gmail.com" },
+]
+description = "A lightweight package allowing developer to easily config their log"
+readme = "README.md"
+requires-python = ">=3.2"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/minhrongcon2000/python-async-handler"
+Issues = "https://github.com/minhrongcon2000/python-async-handler/issues"
+
+[tool.isort]
+profile = "black"
