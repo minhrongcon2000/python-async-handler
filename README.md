@@ -10,7 +10,7 @@ One day, I made an attempt to write a logging SDK for my company and realize tha
 
 I took inspiration from a [blog](https://rob-blackbourn.medium.com/how-to-use-python-logging-queuehandler-with-dictconfig-1e8b1284e27a) post by Rob Blackbourn. However, his code does not take into account for the fact that `ConvertingList` wraps built-in `list` and not convert string to handlers. That's why I kinda "stole" his code and made it work.
 
-## Usage
+## Installation
 
 ### For copy-paste developer
 
@@ -18,4 +18,77 @@ All you need to do is to copy `async-handler` and config it with your project (o
 
 ### For lazy developer
 
-TBA
+You can install it via `pip install python-async-handler`
+
+## Usage
+
+### Vanilla usage
+
+```python
+import logging
+from async_handler import AsyncHandler
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+hdlr = AsyncHandler(
+    [
+        logging.FileHandler("app.log"),
+        logging.StreamHandler(),
+    ]
+)
+
+
+logger.addHandler(hdlr)
+
+logger.info("hello")
+```
+
+### Via config
+
+```python
+import logging
+import logging.config
+import time
+
+LOGGING = {
+    "version": 1,
+    "formatters": {
+        "default": {
+            "format": "%(asctime)s %(levelname)-8s %(message)s",
+        },
+    },
+    "handlers": {
+        "qhandler": {
+            "class": "async_handler.AsyncHandler",
+            "queue": {
+                "class": "queue.Queue",
+            },
+            "handlers": [
+                {
+                    "class": "logging.StreamHandler",
+                    "formatter": "default",
+                },
+                {
+                    "class": "logging.FileHandler",
+                    "filename": "app.log",
+                    "formatter": "default",
+                },
+            ],
+        },
+    },
+    "loggers": {
+        "__main__": {
+            "handlers": ["qhandler"],
+            "level": "INFO",
+        },
+    },
+}
+logging.config.dictConfig(LOGGING)
+```
+
+You can integrate with other config file format by following the instruction [here](https://docs.python.org/3/howto/logging.html)
+
+### Important notes
+
+For those who only copies and pastes the source code, please add the following environment variables `PYTHONPATH=/path/to/your/module/with/async-handler`. That way, Python interpreter can find where you put your source code.
