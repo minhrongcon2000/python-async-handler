@@ -1,16 +1,10 @@
 import atexit
-from logging import Handler
 from logging.config import ConvertingDict, ConvertingList, valid_ident
 from logging.handlers import QueueHandler, QueueListener
-from queue import Queue, SimpleQueue
-from typing import Any, Dict, List, Union
-
-HANDLER_ARG_TYPE = Union[ConvertingList[Dict[str, Any]], List[Handler]]
-
-QUEUE_ARG_TYPE = Union[ConvertingDict[str, Any], Queue[Handler]]
+from queue import SimpleQueue
 
 
-def _resolveChildrenConfig(handlers: HANDLER_ARG_TYPE) -> List[Handler]:
+def _resolveChildrenConfig(handlers):
     """Borrow from original logging module!"""
     if not isinstance(handlers, ConvertingList):
         return handlers
@@ -41,7 +35,7 @@ def _resolveChildrenConfig(handlers: HANDLER_ARG_TYPE) -> List[Handler]:
     return adj_hdlr
 
 
-def _resolveQueue(q: QUEUE_ARG_TYPE) -> Queue[Handler]:
+def _resolveQueue(q):
     """Copy from https://rob-blackbourn.medium.com/how-to-use-python-logging-queuehandler-with-dictconfig-1e8b1284e27a.
     However, don't follow the handler, it's bugged as of Python >= 3.7 (not sure what Python version this blog is written on)
     """
@@ -67,8 +61,8 @@ def _resolveQueue(q: QUEUE_ARG_TYPE) -> Queue[Handler]:
 class AsyncHandler(QueueHandler):
     def __init__(
         self,
-        handlers: HANDLER_ARG_TYPE,
-        queue: QUEUE_ARG_TYPE = SimpleQueue(),
+        handlers,
+        queue=SimpleQueue(),
         respect_handler_level: bool = False,
     ) -> None:
         super().__init__(queue)
@@ -78,4 +72,3 @@ class AsyncHandler(QueueHandler):
             self.queue, *adj_hdlrs, respect_handler_level=respect_handler_level
         )
         self._worker.start()
-        atexit.register(self._worker.stop)
