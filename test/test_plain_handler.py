@@ -1,5 +1,6 @@
 import logging
 import tempfile
+import time
 
 import pytest
 
@@ -20,6 +21,7 @@ def logFile():
     )
     logger.addHandler(hdlr)
     logger.info("hello")
+    time.sleep(2)
     logging.shutdown()
 
     yield tmpfile

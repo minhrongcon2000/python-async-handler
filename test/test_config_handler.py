@@ -1,6 +1,7 @@
 import logging
 import logging.config
 import tempfile
+import time
 
 import pytest
 
@@ -36,6 +37,7 @@ def logFile():
     logger = logging.getLogger(__name__)
 
     logger.info("hello")
+    time.sleep(2)
     logging.shutdown()
 
     yield tmpfile
