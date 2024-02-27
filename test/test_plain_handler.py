@@ -1,6 +1,5 @@
 import logging
 import tempfile
-import time
 
 import pytest
 
@@ -21,10 +20,10 @@ def logFile():
     )
     logger.addHandler(hdlr)
     logger.info("hello")
+    logging.shutdown()
 
     yield tmpfile
     tmpfile.close()
-    logging.shutdown()
 
 
 def testPlainUsage(caplog, logFile):

@@ -1,8 +1,6 @@
 import logging
 import logging.config
-import os
 import tempfile
-import time
 
 import pytest
 
@@ -38,11 +36,11 @@ def logFile():
     logger = logging.getLogger(__name__)
 
     logger.info("hello")
+    logging.shutdown()
 
     yield tmpfile
 
     tmpfile.close()
-    logging.shutdown()
 
 
 def testConfigUsage(caplog, logFile):
