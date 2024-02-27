@@ -1,4 +1,5 @@
 import atexit
+from logging import Handler
 from logging.config import ConvertingDict, ConvertingList, valid_ident
 from logging.handlers import QueueHandler, QueueListener
 from queue import SimpleQueue
@@ -72,3 +73,4 @@ class AsyncHandler(QueueHandler):
             self.queue, *adj_hdlrs, respect_handler_level=respect_handler_level
         )
         self._worker.start()
+        atexit.register(self._worker.stop)

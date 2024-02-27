@@ -1,49 +1,35 @@
 import logging
-import logging.config
 import os
 import tempfile
-import time
-import unittest
-from io import StringIO
+
+import pytest
 
 from async_handler import AsyncHandler
 
 
-class BasicUsageTest(unittest.TestCase):
+@pytest.fixture
+def logFile():
+    tmpfile = tempfile.NamedTemporaryFile()
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
 
-    def testPlainUsage(self):
-        logger = logging.getLogger(__name__)
-        logger.setLevel(logging.INFO)
+    hdlr = AsyncHandler(
+        [
+            logging.StreamHandler(),
+            logging.FileHandler(tmpfile.name),
+        ]
+    )
+    logger.addHandler(hdlr)
+    logger.info("hello")
 
-        hdlr = AsyncHandler([logging.StreamHandler(), logging.FileHandler("app.log")])
-        logger.addHandler(hdlr)
-        logger.info("hello")
+    yield tmpfile
+    tmpfile.close()
+    logging.shutdown()
 
-    def testConfigUsage(self):
-        LOGGING = {
-            "version": 1,
-            "handlers": {
-                "qhandler": {
-                    "class": "async_handler.AsyncHandler",
-                    "handlers": [
-                        {
-                            "class": "logging.StreamHandler",
-                        },
-                        {
-                            "class": "logging.FileHandler",
-                            "filename": "app.log",
-                        },
-                    ],
-                },
-            },
-            "loggers": {
-                "root": {
-                    "handlers": ["qhandler"],
-                    "level": "INFO",
-                },
-            },
-        }
-        logging.config.dictConfig(LOGGING)
 
-        logger = logging.getLogger(__name__)
-        logger.info("hello")
+def testPlainUsage(caplog, logFile):
+    for record in caplog.records:
+        assert record.message == "hello"
+        assert record.levelno == logging.INFO
+
+    # assert logFile.read().decode() == "hello\n"

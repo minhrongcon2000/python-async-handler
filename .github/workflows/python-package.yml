@@ -38,5 +38,3 @@ jobs:
     - name: Test with pytest
       run: |
         export PYTHONPATH=$(pwd) && pytest
-    - name: Check app.log
-      run: cat app.log
