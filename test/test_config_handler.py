@@ -2,6 +2,7 @@ import logging
 import logging.config
 import os
 import tempfile
+import time
 
 import pytest
 
@@ -49,4 +50,4 @@ def testConfigUsage(caplog, logFile):
         assert record.message == "hello"
         assert record.levelno == logging.INFO
 
-    # assert logFile.read().decode() == "hello\n"
+    assert logFile.read().decode() == "hello\n"
