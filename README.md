@@ -92,3 +92,7 @@ You can integrate with other config file format by following the instruction [he
 ### Important notes
 
 For those who only copies and pastes the source code, please add the following environment variables `PYTHONPATH=/path/to/your/module/with/async-handler`. That way, Python interpreter can find where you put your source code.
+
+## Compatibility
+
+- Works with Python 3.9+ (I really want this to work with Python below that, but I haven't found a way!)
